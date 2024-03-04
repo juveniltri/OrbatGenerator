@@ -1,0 +1,8 @@
+.team-card {
+    cursor: grab;
+}
+
+.bg-red { background-color: #ff0000; color: white; }
+.bg-blue { background-color: #0000ff; color: white;}
+.bg-green { background-color: #008000; color: white;}
+.bg-gold { background-color: #ffd700;}
