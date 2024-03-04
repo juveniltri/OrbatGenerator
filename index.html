@@ -6,14 +6,23 @@
         <title>Configuración ORBAT</title>
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
     </head>
     <body>
 
-        <textarea id="inputText" rows="10" class="form-control"></textarea>
-        <button id="generateCards" class="btn btn-primary">Generar Cards</button>
+        <textarea id="inputText" rows="10" class="form-control" placeholder="
+        UNIFORM 1-1
+        Teniente (U1)-Juvenil
+        Sanitario (U1)-Juvenil
+        
+        ALPHA 2-1
+        Teniente (A2)-Juvenil
+        Sanitario (A2)-Juvenil">
+        </textarea>
+        <button id="generateCards" class="btn btn-primary">Generar Orbat</button>
+        <button id="toggleText" class="btn btn-primary">Ocultar texto</button>
 
-        <div id="teamsContainer" class="container mt-3">
-        </div>
+        <div id="teamsContainer" class="grid-container"></div>
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

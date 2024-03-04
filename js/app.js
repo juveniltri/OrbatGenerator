@@ -1,10 +1,9 @@
 document.getElementById('generateCards').addEventListener('click', function() {
-    console.log("Estamos aqui");
     const inputText = document.getElementById('inputText').value;
+    const inputTextDisplay = document.getElementById('inputText');
     const teamsContainer = document.getElementById('teamsContainer');
-    teamsContainer.innerHTML = ''; // Limpiar el contenedor antes de añadir nuevas cards
+    teamsContainer.innerHTML = '';
     
-    // Dividir el texto por equipos, asumiendo una línea en blanco entre equipos
     const teams = inputText.trim().split('\n\n');
   
     teams.forEach(teamInfo => {
@@ -13,64 +12,104 @@ document.getElementById('generateCards').addEventListener('click', function() {
         const teamMembers = lines.slice(1);
         generateTeamCard(teamName, teamMembers, teamsContainer);
     });
+    
+    const toggleTextButton = document.getElementById('toggleText');
+    if (inputTextDisplay.style.display !== 'none') {
+        inputTextDisplay.style.display = 'none';
+        toggleTextButton.textContent = 'Mostrar Texto';
+    }
 });
-  
+
+
+document.getElementById('toggleText').addEventListener('click', function() {
+    const inputText = document.getElementById('inputText');
+    if (inputText.style.display === 'none') {
+        inputText.style.display = '';
+        this.textContent = 'Ocultar Texto';
+    } else {
+        inputText.style.display = 'none';
+        this.textContent = 'Mostrar Texto';
+    }
+});
+
 function generateTeamCard(teamName, members, container) {
     const card = document.createElement('div');
     card.classList.add('card', 'team-card', 'mb-3');
-    
-    let cardContent = `<div class="card-header">${teamName}</div><ul class="list-group list-group-flush sortable">`;
+
+    let cardHeaderContent = `<div class="card-header d-flex justify-content-between align-items-center">
+        ${teamName}
+        <button class="toggle-members btn btn-sm btn-outline-secondary">
+            <i class="fas fa-minus"></i>
+        </button>
+    </div>`;
+
+    let membersContent = '<div class="members-container">';
     members.forEach((member, index) => {
         const [role, name] = member.split('-');
-        cardContent += `
-        <li class="list-group-item d-flex justify-content-between align-items-center">
+        membersContent += `
+        <div class="member list-group-item d-flex justify-content-between align-items-center">
             <span class="item-text">${index + 1}. ${role.trim()} - ${name.trim()}</span>
             <div>
-            <button class="btn btn-sm btn-danger change-color" data-color="bg-red">Rojo</button>
-            <button class="btn btn-sm btn-primary change-color" data-color="bg-blue">Azul</button>
-            <button class="btn btn-sm btn-success change-color" data-color="bg-green">Verde</button>
-            <button class="btn btn-sm btn-warning change-color" data-color="bg-gold">Dorado</button>
-            <button class="btn btn-sm btn-secondary change-color" data-color="">Defecto</button>
+                <button class="btn btn-sm btn-danger change-color" data-color="bg-red">Rojo</button>
+                <button class="btn btn-sm btn-primary change-color" data-color="bg-blue">Azul</button>
+                <button class="btn btn-sm btn-success change-color" data-color="bg-green">Verde</button>
+                <button class="btn btn-sm btn-warning change-color" data-color="bg-gold">Dorado</button>
+                <button class="btn btn-sm btn-secondary change-color" data-color="">Defecto</button>
             </div>
-        </li>`;
+        </div>`;
     });
-    cardContent += `</ul>`;
+    membersContent += '</div>';
 
-    card.innerHTML = cardContent;
+    card.innerHTML = cardHeaderContent + membersContent;
     container.appendChild(card);
 
-    // Inicializar SortableJS y añadir evento click a los botones para cambiar de color
-    new Sortable(card.querySelector('.sortable'), {
+    new Sortable(card.querySelector('.members-container'), {
         animation: 150,
-        onEnd: function() {
-            const listItems = card.querySelectorAll('.list-group-item');
-            listItems.forEach((item, index) => {
-                // Encuentra el <span> dentro del elemento de la lista y actualiza su contenido
+        onEnd: function(evt) {
+            const items = Array.from(evt.to.children);
+            items.forEach((item, index) => {
                 const itemText = item.querySelector('.item-text');
-                if(itemText) {
-                    const contentParts = itemText.textContent.split('. ');
-                    if(contentParts.length > 1) {
-                        itemText.textContent = `${index + 1}. ${contentParts.slice(1).join('. ')}`;
-                    } else {
-                        // En caso de que no haya un punto y espacio, simplemente prepone el nuevo número
-                        itemText.textContent = `${index + 1}. ${itemText.textContent}`;
-                    }
-                }
+                const splitText = itemText.textContent.split('. ').slice(1).join('. ');
+                itemText.textContent = `${index + 1}. ${splitText}`;
             });
-        }
+        }        
     });
-      
 
-    // Añadir manejadores de eventos para los botones de cambio de color
     card.querySelectorAll('.change-color').forEach(button => {
         button.addEventListener('click', function() {
-        const colorClass = this.getAttribute('data-color');
-        const listItem = this.closest('.list-group-item');
-        // Remover clases de color previas
-        listItem.classList.remove('bg-red', 'bg-blue', 'bg-green', 'bg-gold');
-        if (colorClass) {
-            listItem.classList.add(colorClass);
-        }
+            const colorClass = this.getAttribute('data-color');
+            const memberDiv = this.closest('.member');
+            memberDiv.classList.remove('bg-red', 'bg-blue', 'bg-green', 'bg-gold');
+            if (colorClass) {
+                memberDiv.classList.add(colorClass);
+            }
         });
     });
+
+    // Cambia la clase del ícono en lugar de textContent
+    card.querySelector('.toggle-members').addEventListener('click', function() {
+        const membersContainer = card.querySelector('.members-container');
+        const icon = this.querySelector('i');
+        if (membersContainer.style.display === 'none') {
+            membersContainer.style.display = '';
+            icon.classList.remove('fa-plus');
+            icon.classList.add('fa-minus');
+        } else {
+            membersContainer.style.display = 'none';
+            icon.classList.remove('fa-minus');
+            icon.classList.add('fa-plus');
+        }
+    });
+
+/*
+    card.querySelector('.toggle-members').addEventListener('click', function() {
+        const membersContainer = card.querySelector('.members-container');
+        if (membersContainer.style.display === 'none') {
+            membersContainer.style.display = '';
+            this.textContent = '-';
+        } else {
+            membersContainer.style.display = 'none';
+            this.textContent = '+';
+        }
+    });   */
 }
