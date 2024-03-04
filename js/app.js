@@ -60,7 +60,13 @@ function generateTeamCard(teamName, members, container) {
     });
     membersContent += '</div>';
 
-    card.innerHTML = cardHeaderContent + membersContent;
+    let cardFooterContent = `
+        <div class="card-footer">
+            <button class="btn btn-sm btn-success export-card">Exportar</button>
+        </div>
+    `;
+
+    card.innerHTML = cardHeaderContent + membersContent + cardFooterContent;
     container.appendChild(card);
 
     new Sortable(card.querySelector('.members-container'), {
@@ -101,15 +107,54 @@ function generateTeamCard(teamName, members, container) {
         }
     });
 
-/*
-    card.querySelector('.toggle-members').addEventListener('click', function() {
-        const membersContainer = card.querySelector('.members-container');
-        if (membersContainer.style.display === 'none') {
-            membersContainer.style.display = '';
-            this.textContent = '-';
-        } else {
-            membersContainer.style.display = 'none';
-            this.textContent = '+';
+    card.querySelector('.export-card').addEventListener('click', function() {
+        const bbCode = exportCardToBBCode(card);
+        copyToClipboard(bbCode);
+    });
+}
+
+function exportCardToBBCode(cardElement) {
+    let bbCode = `[b]Equipo ${cardElement.querySelector('.card-header').textContent.trim()}:[/b]\n[list=1]\n`;
+    cardElement.querySelectorAll('.member').forEach(member => {
+        const roleAndName = member.querySelector('.item-text').textContent.trim();
+        let name = roleAndName.substring(roleAndName.lastIndexOf('-') + 1).trim();
+        let colorBBCode = '';
+
+        if (member.classList.contains('bg-red')) {
+            colorBBCode = '[color=#FF0000]';
+        } else if (member.classList.contains('bg-blue')) {
+            colorBBCode = '[color=#0080FF]';
+        } else if (member.classList.contains('bg-green')) {
+            colorBBCode = '[color=#008000]';
+        } else if (member.classList.contains('bg-gold')) {
+            colorBBCode = '[color=#FFBF00]';
         }
-    });   */
+        bbCode += `[*]${colorBBCode}${name}${colorBBCode ? '[/color]' : ''}\n`;
+    });
+    bbCode += `[/list]\n`;
+    return bbCode;
+}
+
+function exportAllCards() {
+    const allCards = document.querySelectorAll('.team-card');
+    let allBBCode = '';
+    allCards.forEach(card => {
+        allBBCode += exportCardToBBCode(card) + '\n';
+    });
+    return allBBCode;
+}
+
+document.getElementById('exportAll').addEventListener('click', function() {
+    const bbCode = exportAllCards();
+    copyToClipboard(bbCode);
+});
+
+function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    alert('El ORBAT se ha copiado al portapapeles.');
 }
