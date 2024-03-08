@@ -12,7 +12,7 @@ body {
 .grid-container {
     display: grid;
     grid-gap: 20px;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
     padding: 20px;
 }
   
@@ -62,7 +62,7 @@ body {
 .member .change-color {
     margin: 0 5px;
     border: none;
-    padding: 5px 10px;
+    padding: 10px 20px;
     cursor: pointer;
     font-size: 0.8em;
 }
